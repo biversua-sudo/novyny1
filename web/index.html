@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Новини</title>
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff; --paper: #f9f7f2; --text: #0d0d0d; --muted: #595959;
+    --line: #d9d9d9; --rule: #0d0d0d; --red: #e3120b; --read: .42;
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: Inter, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212; --paper: #1a1a1a; --text: #f2f2f2; --muted: #a6a6a6;
+      --line: #333333; --rule: #f2f2f2; --red: #ff4d47;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 17px/1.5 var(--serif); -webkit-font-smoothing: antialiased;
+  }
+  body::before { content: ""; display: block; height: 4px; background: var(--red); }
+
+  header {
+    position: sticky; top: 0; z-index: 5; background: var(--bg);
+    padding: calc(env(safe-area-inset-top) + 14px) 16px 0;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  .top { display: flex; align-items: flex-end; gap: 12px; padding-bottom: 10px; border-bottom: 3px solid var(--rule); }
+  .mast { flex: 1; }
+  h1 { font: 700 34px/1 var(--serif); margin: 0; letter-spacing: -.01em; }
+  .dateline { font: 500 12px/1.2 var(--sans); color: var(--muted); margin-top: 6px; }
+  .btn {
+    border: 1px solid var(--rule); background: transparent; color: var(--text);
+    border-radius: 0; padding: 6px 12px; font: 600 13px var(--sans); cursor: pointer;
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .btn:hover { background: var(--text); color: var(--bg); }
+  .btn.spin span { display: inline-block; animation: s 1s linear infinite; }
+  @keyframes s { to { transform: rotate(360deg); } }
+
+  .timer { font: 500 12px var(--sans); color: var(--muted); padding: 8px 0; display: flex; align-items: center; gap: 10px; }
+  .timer b { color: var(--text); }
+  .bar { flex: 1; height: 2px; background: var(--line); overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--red); transition: width .4s; }
+  .timer.over b { color: var(--red); }
+
+  nav {
+    display: flex; gap: 22px; overflow-x: auto; scrollbar-width: none;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav button {
+    flex: none; border: 0; background: transparent; color: var(--muted); cursor: pointer; white-space: nowrap;
+    font: 600 13px var(--sans); text-transform: uppercase; letter-spacing: .05em;
+    padding: 11px 0 9px; border-bottom: 3px solid transparent;
+  }
+  nav button:hover { color: var(--text); }
+  nav button.on { color: var(--text); border-bottom-color: var(--red); }
+  nav .count { color: var(--muted); margin-left: 5px; font-weight: 500; }
+
+  main { max-width: 792px; margin: 0 auto; padding: 0 16px 40px; }
+  .day {
+    font: 700 13px var(--sans); text-transform: uppercase; letter-spacing: .08em; color: var(--red);
+    margin: 26px 0 0; padding-bottom: 8px; border-bottom: 1px solid var(--rule);
+  }
+  a.item {
+    display: flex; gap: 16px; text-decoration: none; color: inherit;
+    padding: 16px 0; border-bottom: 1px solid var(--line); transition: opacity .2s;
+  }
+  a.item:hover .title { color: var(--red); }
+  a.item.read { opacity: var(--read); }
+  .body { flex: 1; min-width: 0; }
+  .kicker { font: 700 12px var(--sans); color: var(--red); text-transform: uppercase; letter-spacing: .06em; }
+  .title { font: 700 20px/1.25 var(--serif); margin: 4px 0 6px; transition: color .15s; }
+  .sum { font: 400 16px/1.45 var(--serif); color: var(--muted); margin: 0 0 6px;
+         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .meta { font: 500 12px var(--sans); color: var(--muted); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .badge { background: var(--red); color: #fff; padding: 1px 6px; font: 700 10px var(--sans); letter-spacing: .06em; }
+  .lang { border: 1px solid var(--line); padding: 0 4px; font-size: 10px; }
+  .thumb { width: 120px; height: 90px; object-fit: cover; flex: none; background: var(--paper); }
+  @media (max-width: 480px) { .thumb { width: 84px; height: 84px; } h1 { font-size: 28px; } .title { font-size: 18px; } }
+
+  /* перша новина дня — головна, як на першій шпальті */
+  a.item.lead { flex-direction: column-reverse; }
+  a.item.lead .title { font-size: 28px; line-height: 1.15; }
+  a.item.lead .sum { -webkit-line-clamp: 3; font-size: 17px; }
+  a.item.lead .thumb { width: 100%; height: 240px; }
+  @media (max-width: 480px) { a.item.lead .title { font-size: 23px; } a.item.lead .thumb { height: 190px; } }
+
+  .empty, .loading { text-align: center; color: var(--muted); padding: 60px 0; font-style: italic; }
+  footer { max-width: 792px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px var(--sans); color: var(--muted); }
+  footer details { border-top: 3px solid var(--rule); padding-top: 10px; }
+  footer details summary { cursor: pointer; }
+  footer ul { padding-left: 18px; }
+  .bad { color: var(--red); }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="mast">
+        <h1>Новини</h1>
+        <div class="dateline" id="today"></div>
+      </div>
+      <button class="btn" id="refresh" title="Оновити"><span>↻</span> Оновити</button>
+    </div>
+    <div class="timer" id="timer">
+      <span>Сьогодні прочитано: <b id="mins">0</b> з 60 хв</span>
+      <div class="bar"><i id="barfill"></i></div>
+    </div>
+    <nav id="tabs">
+      <button data-cat="all" class="on">Головне<span class="count" id="c-all"></span></button>
+    </nav>
+  </div>
+</header>
+
+<main id="list"><div class="loading">Завантажую свіжі новини…<br><small>Новини оновлюються кожні 30 хвилин</small></div></main>
+
+<footer id="foot"></footer>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+let items = [], cat = store.get("cat", "all");
+const lastVisit = store.get("lastVisit", 0);
+const readSet = new Set(store.get("read", []));
+
+// ---- час "5 хв тому" ----
+function ago(ts) {
+  const s = Date.now() / 1000 - ts;
+  if (s < 60) return "щойно";
+  if (s < 3600) return Math.floor(s / 60) + " хв тому";
+  if (s < 86400) return Math.floor(s / 3600) + " год тому";
+  return "вчора";
+}
+function dayLabel(ts) {
+  const d = new Date(ts * 1000), t = new Date();
+  const y = new Date(); y.setDate(t.getDate() - 1);
+  if (d.toDateString() === t.toDateString()) return "Сьогодні";
+  if (d.toDateString() === y.toDateString()) return "Вчора";
+  return d.toLocaleDateString("uk-UA", { day: "numeric", month: "long" });
+}
+const esc = (s) => (s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---- показ списку ----
+function render() {
+  document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.cat === cat));
+  const list = cat === "all" ? items : items.filter((i) => i.cat === cat);
+
+  const counts = { all: items.length };
+  items.forEach((i) => (counts[i.cat] = (counts[i.cat] || 0) + 1));
+  document.querySelectorAll(".count").forEach((el) => {
+    const n = counts[el.id.slice(2)] || 0; el.textContent = n ? n : "";
+  });
+
+  if (!list.length) { $("#list").innerHTML = '<div class="empty">Тут поки порожньо</div>'; return; }
+  let html = "", lastDay = "", idx = 0;
+  for (const i of list) {
+    const day = dayLabel(i.ts);
+    if (day !== lastDay) { html += `<div class="day">${day}</div>`; lastDay = day; }
+    const isNew = i.ts > lastVisit && lastVisit > 0;
+    const read = readSet.has(i.link) ? " read" : "";
+    const lead = idx === 0 ? " lead" : "";
+    html += `<a class="item${read}${lead}" href="${esc(i.link)}" target="_blank" rel="noopener" data-link="${esc(i.link)}">
+      <div class="body">
+        <div class="kicker">${esc(i.source)}</div>
+        <div class="title">${esc(i.title)}</div>
+        ${i.summary ? `<p class="sum">${esc(i.summary)}</p>` : ""}
+        <div class="meta"><span>${ago(i.ts)}</span>
+          ${i.lang === "en" ? '<span class="lang">EN</span>' : ""}
+          ${isNew ? '<span class="badge">НОВЕ</span>' : ""}</div>
+      </div>
+      ${i.image ? `<img class="thumb" src="${esc(i.image)}" loading="lazy" alt="" onerror="this.remove()">` : ""}
+    </a>`;
+    idx++;
+  }
+  $("#list").innerHTML = html;
+}
+{ const d = new Date().toLocaleDateString("uk-UA", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).replace(/\s*р\.$/, "");
+  $("#today").textContent = d.charAt(0).toUpperCase() + d.slice(1); }
+
+function renderStatus(status, updated) {
+  const ok = status.filter((s) => s.ok).length;
+  const t = new Date(updated * 1000).toLocaleTimeString("uk-UA", { hour: "2-digit", minute: "2-digit" });
+  $("#foot").innerHTML = `<details><summary>Оновлено о ${t} · працює джерел: ${ok} з ${status.length}</summary><ul>` +
+    status.map((s) => s.ok
+      ? `<li>${esc(s.source)} — ${s.count} новин${s.via === "google" ? " (через Google News)" : ""}</li>`
+      : `<li class="bad">${esc(s.source)} — не вдалося завантажити</li>`).join("") + "</ul></details>";
+}
+
+let tabsBuilt = false;
+function buildTabs(categories) {
+  if (tabsBuilt) return; tabsBuilt = true;
+  $("#tabs").insertAdjacentHTML("beforeend", categories.map((c) =>
+    `<button data-cat="${esc(c.id)}">${esc(c.title)}<span class="count" id="c-${esc(c.id)}"></span></button>`).join(""));
+}
+
+async function load() {
+  const btn = $("#refresh"); btn.classList.add("spin");
+  try {
+    const r = await fetch("news.json?t=" + Date.now(), { cache: "no-store" });
+    const data = await r.json();
+    buildTabs(data.categories);
+    items = data.items; render(); renderStatus(data.status, data.updated);
+  } catch (e) {
+    if (!items.length) $("#list").innerHTML = '<div class="empty">Немає з\'єднання. Спробуй оновити.</div>';
+  } finally { btn.classList.remove("spin"); }
+}
+
+// ---- вкладки, прочитане ----
+$("#tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  cat = b.dataset.cat; store.set("cat", cat); render(); window.scrollTo({ top: 0 });
+});
+$("#list").addEventListener("click", (e) => {
+  const a = e.target.closest("a.item"); if (!a) return;
+  readSet.add(a.dataset.link); a.classList.add("read");
+  store.set("read", [...readSet].slice(-500));
+});
+$("#refresh").addEventListener("click", () => load());
+
+// ---- таймер читання (ліміт 1 година на день) ----
+const LIMIT = 60;
+const today = new Date().toDateString();
+let t = store.get("timer", { day: today, sec: 0 });
+if (t.day !== today) t = { day: today, sec: 0 };
+function drawTimer() {
+  const m = Math.floor(t.sec / 60);
+  $("#mins").textContent = m;
+  $("#barfill").style.width = Math.min(100, (m / LIMIT) * 100) + "%";
+  $("#timer").classList.toggle("over", m >= LIMIT);
+  if (m >= LIMIT) $("#mins").textContent = m + " — година минула, час діяти 💪";
+}
+setInterval(() => {
+  if (document.visibilityState === "visible") { t.sec += 5; store.set("timer", t); drawTimer(); }
+}, 5000);
+drawTimer();
+
+// коли відкриваєш статтю в новій вкладці — час її читання теж рахується (до 10 хв за статтю)
+let openedAt = 0;
+$("#list").addEventListener("click", (e) => { if (e.target.closest("a.item")) openedAt = Date.now(); });
+
+window.addEventListener("pagehide", () => store.set("lastVisit", Math.floor(Date.now() / 1000)));
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    store.set("lastVisit", Math.floor(Date.now() / 1000));
+  } else if (openedAt) {
+    t.sec += Math.min(600, Math.floor((Date.now() - openedAt) / 1000));
+    openedAt = 0; store.set("timer", t); drawTimer();
+  }
+});
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+load();
+setInterval(() => load(), 10 * 60 * 1000);
+</script>
+</body>
+</html>
